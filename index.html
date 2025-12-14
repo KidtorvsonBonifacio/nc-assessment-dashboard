@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NC Assessment</title>
+  <link rel="stylesheet" href="index.css" />
+  
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <!-- Left logo + title header. Arrow toggle is positioned to the right of this header. -->
+    <div class="sidebar-header">
+      <!-- Logo image from folder -->
+      <img id="sidebar-logo-left" class="sidebar-logo-left" src="images.jpg"  />
+      <div class="sidebar-title">NC Dashboard</div>
+    </div>
+    <div id="sidebar-toggle" class="toggle-btn" aria-label="Toggle sidebar">
+      <i class="fas fa-chevron-left toggle-arrow"></i>
+    </div>
+    <ul class="menu">
+     
+      <li class="nav-btn" data-page="introduction">
+  <i class="fa-solid fa-house icon"></i><span class="text">Home</span>
+</li>
+
+
+      <li class="nav-btn" data-page="combined"><i class="fa-solid fa-chart-column icon"></i><span class="text">Dashboard</span></li>
+      <li class="nav-btn" id="adminGuideLink"><i class="fa-solid fa-book icon"></i><span class="text">Admin Guide</span></li>
+      <li class="nav-btn" id="devDocsLink"><i class="fa-solid fa-book-open icon"></i><span class="text">Developer Docs</span></li>
+
+      <li class="nav-btn" data-page="about"><i class="fa-solid fa-info-circle icon"></i><span class="text">About</span></li>
+      <li class="nav-btn" data-page="settings"><i class="fa-solid fa-gear icon"></i><span class="text">Settings</span></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main id="content">
+
+
+    <!-- INTRODUCTION PAGE -->
+    <section id="introduction-page" class="page" style="display: none;">
+    <h1>Welcome to the Dashboard</h1>
+    <p>This is the introduction page. You can place instructions, summaries, or announcements here.</p>
+    
+    <div class="intro-box">
+        <h2>What this Dashboard Does</h2>
+        <p>bout</span></li>
+      <li class="nav-btn" data-page="settings"><i class="fa-solid fa-gear icon"></i><span 
+           This system helps visualize and analyze NC assessment data, 
+           compare performance, and easily navigate between different modules.
+        </p>
+    </div>
+</section>
+  <section id="page-introduction" class="page">
+    <div class="page-header">
+      <h2><i class="fas fa-home"></i> NC Assessment Dashboard</h2>
+      <p>Your tool for viewing, checking, and managing NC assessment results.</p>
+    </div>
+
+    <!-- Hero area removed per user request (no image) -->
+
+    <!-- Welcome box (friendly, a bit longer) -->
+    <div class="welcome-box">
+      <h3>Welcome, Administrator</h3>
+      <p>
+        Welcome to the NC Assessment Dashboard admin console. Use the tools on this page to upload and validate assessment files, review and approve pending imports, correct or remove records, export reports, and review audit activity. These functions are for authorized administrators only.
+      </p>
+    </div>
+
+    <!-- Compact feature list -->
+    <div class="feature-grid">
+      <div class="feature-box">
+        <h4>Upload &amp; Import</h4>
+        <p>Import NC/Excel files with a preview step. Run validation, stage changes, and approve or reject rows before committing to the database.</p>
+      </div>
+      <div class="feature-box">
+        <h4>Data Validation &amp; Cleanup</h4>
+        <p>Automatic checks for missing fields, date formats, duplicates, and inconsistent entries. Use built-in cleanup tools to normalize and correct data before finalizing imports.</p>
+      </div>
+      <div class="feature-box">
+        <h4>Participant Management</h4>
+        <p>Edit participant records, update assessment statuses, assign certification numbers, and manage participant-level details centrally.</p>
+      </div>
+      <div class="feature-box">
+        <h4>Admin Tools &amp; Audit Logs</h4>
+        <p>Access the Admin Guide, download templates, export reports, and review audit logs for uploads, edits, and deletions to maintain traceability.</p>
+      </div>
+    </div>
+
+    <!-- Last data update (will be set by JS on load/upload) -->
+    <div class="last-update-box">
+      <strong>Last Data Update:</strong>
+      <span id="lastUpdateTime">Never</span>
+    </div>
+
+  </section>
+
+
+<!-- COMBINED ASSESSMENT PAGE -->
+<section id="page-combined" class="page">
+
+  <!-- TOP NAVIGATION TABS (Centered & Enlarged) -->
+  <nav class="nav-tabs centered-tabs">
+    <button class="tab-btn active" data-tab="page-overview">Overview</button>
+    <button class="tab-btn" data-tab="tab-nc">NC Assessment</button>
+    </nav>
+
+
+
+  <!-- ============= OVERVIEW PAGE (FINAL) ============= -->
+  <div class="tab-content active-tab" id="page-overview">
+    <div class="frame-top">
+      <div class="page-header">
+        <h2><i class="fas fa-chart-line"></i> NC Assessment Dashboard — Overview</h2>
+        <p>Summary of NC assessment results for all programs</p>
+      </div>
+
+      <div class="top-row" style="justify-content:space-between; align-items:center;">
+        <div class="controls-left">
+          <label class="btn">
+            <i class="fas fa-upload"></i> Upload Excel
+            <input id="file-input-overview" type="file" accept=".xlsx,.xls" />
+          </label>
+          <button class="btn ghost" id="download-sample-overview"><i class="fas fa-download"></i> Download Template</button>
+          <button class="btn ghost" id="my-files-btn-overview" style="cursor:pointer;"><i class="fas fa-folder"></i> My Files</button>
+        </div>
+
+        <!-- Right controls: Filter toggle only -->
+        <div class="controls-right">
+          <div class="filter-box" style="min-width:320px; display:flex; gap:16px; flex-wrap:nowrap;">
+            <label style="font-size:12px; color:#555; display:flex; align-items:center; gap:6px; margin:0; white-space:nowrap;">Year
+              <select id="filterYearOverview" style="padding:6px 8px; border-radius:4px; border:1px solid #ddd; width:auto; background:#fff; height:32px;">
+                <option value="">All</option>
+              </select>
+            </label>
+            <label style="font-size:12px; color:#555; display:flex; align-items:center; gap:6px; margin:0; white-space:nowrap;">Qualification
+              <select id="filterQualOverview" style="padding:6px 8px; border-radius:4px; border:1px solid #ddd; width:auto; background:#fff; height:32px;">
+                <option value="">All</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+
+      <!-- Summary Cards -->
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-users"></i></div>
+          <small>Candidates</small>
+          <b id="overviewCandidates">0</b>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-check"></i></div>
+          <small>Assessed</small>
+          <b id="overviewAssessed">0</b>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-certificate"></i></div>
+          <small>Certified</small>
+          <b id="overviewCertified">0</b>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="chart-container">
+        <!-- Certified per Qualification (with year toggle) -->
+        <div class="chart-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>Certified Students per Qualification</h3>
+          </div>
+          <canvas id="certifiedPerQualChart"></canvas>
+        </div>
+
+        <!-- Gender Distribution (with filters) -->
+        <div class="chart-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>Gender Distribution</h3>
+          </div>
+          <canvas id="genderDistributionChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Triple Bar Chart (Trend per Year) with scroll support  --> 
+      <div class="chart-container trend-chart">
+        <div class="chart-box" style="min-height:400px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>Trend per Year (Candidates, Assessed, Certified)</h3>
+          </div>
+          <canvas id="trendPerYearChart" style="max-height:350px;"></canvas>
+        </div>
+      </div> 
+    </div>
+  </div> 
+  
+  <!-- ============= NC ASSESSMENT PAGE (FINAL) ============= -->
+  <div class="tab-content" id="tab-nc">
+    <div class="frame-top">
+      <div class="page-header">
+        <h2><i class="fas fa-certificate"></i> NC Holders Dashboard</h2>
+        <p>Only Certified Students are displayed.</p>
+      </div>
+
+      <!-- Top row: Upload/Download (left) and Search/Filter (right) -->
+      <div class="top-row" style="justify-content:space-between; align-items:center;">
+        <div class="controls-left">
+          <label class="btn">
+            <i class="fas fa-upload"></i> Upload Excel
+            <input id="file-input-combined" type="file" accept=".xlsx,.xls" />
+          </label>
+          <button class="btn ghost" id="download-sample-combined"><i class="fas fa-download"></i> Download Template</button>
+          <button class="btn ghost" id="my-files-btn-combined" style="cursor:pointer;"><i class="fas fa-folder"></i> My Files</button>
+        </div>
+
+        <div class="controls-right">
+          <input type="text" id="searchNC" placeholder="🔍 Search by Name, Gender, Qual, Center, Date..." style="padding:6px 8px; border:1px solid #ddd; border-radius:6px; font-size:13px; min-width:200px; height:32px;" />
+          <div class="filter-box" style="min-width:320px; margin-left:12px; display:flex; gap:16px; flex-wrap:nowrap;">
+            <label style="font-size:12px; color:#555; display:flex; align-items:center; gap:6px; margin:0; white-space:nowrap;">Year
+              <select id="filterYearNC" style="padding:6px 8px; border-radius:4px; border:1px solid #ddd; width:auto; background:#fff; height:32px;">
+                <option value="">All</option>
+              </select>
+            </label>
+            <label style="font-size:12px; color:#555; display:flex; align-items:center; gap:6px; margin:0; white-space:nowrap;">Qualification
+              <select id="filterQualNC" style="padding:6px 8px; border-radius:4px; border:1px solid #ddd; width:auto; background:#fff; height:32px;">
+                <option value="">All</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      
+      <!-- NC Holders Results (Collapsible by Qualification) -->
+      <div class="results-panel">
+        <h3><i class="fas fa-certificate"></i> Assessment Results</h3>
+        <div id="ncTableBody" style="margin-top:15px;">
+          <p class="empty-note">Upload Excel to load results.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+    <!-- ABOUT PAGE -->
+    <section id="page-about" class="page">
+      <div class="page-header">
+        <h2><i class="fas fa-info-circle"></i> About</h2>
+        <p>Information about this dashboard</p>
+      </div>
+      <div class="info-box">
+        <h3>About NC & BPP Assessment Dashboard</h3>
+        <p>This dashboard is designed to manage and visualize National Certificate (NC) and Basic Professional Program (BPP) assessment results.</p>
+        <p><strong>Version:</strong> 1.0.0</p>
+        <p><strong>Created:</strong> 2025</p>
+      </div>
+    </section>
+
+    <!-- SETTINGS PAGE -->
+    <section id="page-settings" class="page">
+      <div class="page-header">
+        <h2><i class="fas fa-cog"></i> Settings</h2>
+        <p>Configure dashboard settings</p>
+      </div>
+      <div class="info-box">
+        <h3>Dashboard Settings</h3>
+        <p>Settings feature coming soon...</p>
+      </div>
+    </section>
+
+    <!-- Developer docs are provided in a modal to match Admin Guide (floating small page) -->
+
+  </main>
+
+  <!-- HELP MODAL -->
+  <div class="help-modal" id="helpModal">
+    <div class="help-modal-content">
+      <div class="help-modal-header">
+        <h2 id="helpModalTitle">Admin Guide</h2>
+        <button class="help-modal-close" id="helpModalClose">&times;</button>
+      </div>
+      <div class="help-modal-body" id="helpModalBody"></div>
+    </div>
+  </div>
+
+  <!-- DEVELOPER DOCS MODAL (floating small page like Admin Guide) -->
+  <div class="help-modal" id="devModal">
+    <div class="help-modal-content">
+      <div class="help-modal-header">
+        <h2 id="devModalTitle">Developer Documentation</h2>
+        <button class="help-modal-close" id="devModalClose">&times;</button>
+      </div>
+      <div class="help-modal-body" id="devModalBody">
+        <h4>Why this documentation matters</h4>
+        <ul>
+          <li>Helps developers run, test and extend the project.</li>
+          <li>Documents design decisions, data formats and operational steps.</li>
+          <li>Provides quick references for common maintenance tasks.</li>
+        </ul>
+
+        <hr />
+
+        <h4>Quick start (run &amp; test)</h4>
+        <p><strong>Prereqs:</strong> Python 3.8+</p>
+
+        <h4>1) Backend (development)</h4>
+        <ul>
+          <li><strong>Setup:</strong> repository backend is in <code>nc-backend/</code>.</li>
+          <li><strong>Scripts:</strong> create a virtual env and install deps from <code>nc-backend/requirements.txt</code>.</li>
+          <li><strong>Endpoints:</strong> see <code>nc-backend/app.py</code> for API routes (import, candidates, delete operations).</li>
+          <li><strong>File handling:</strong> imports accept a JSON payload (rows + source_file) and the app falls back to SQLite file <code>nc_dashboard.sqlite</code> for local testing.</li>
+          <li><strong>Logic &amp; flow:</strong> POST to <code>/api/import-json</code> inserts rows into the <code>candidates</code> table via SQLAlchemy.</li>
+        </ul>
+
+        <h4>2) Frontend (development)</h4>
+        <ul>
+          <li><strong>Entry point:</strong> the main UI script is <code>nc-frontend/d.js</code> and the page is <code>nc-frontend/d.html</code>.</li>
+          <li><strong>Loading scripts:</strong> include SheetJS (XLSX), Chart.js and <code>d.js</code> in the page head.</li>
+          <li><strong>UI components:</strong> upload modal, My Files, overview cards and charts are implemented in <code>d.js</code>.</li>
+          <li><strong>Rendering logic:</strong> data is stored in <code>state.raw</code>, filters are populated from that state and charts are re-rendered from aggregates.</li>
+        </ul>
+
+        <hr />
+
+        <h4>Basic API Tests</h4>
+        <ul>
+          <li><strong>Sample requests:</strong> health check <code>GET /api/health</code>, import JSON <code>POST /api/import-json</code>.</li>
+          <li><strong>Expected responses:</strong> health returns <code>{status: 'ok'}</code>; import returns <code>{ inserted: n }</code> on success.</li>
+          <li><strong>Error handling:</strong> check backend console where <code>app.py</code> is running for stack traces and error messages.</li>
+        </ul>
+
+        <hr />
+
+        <h4>Project Structure</h4>
+        <ul>
+          <li><code>nc-backend/</code> — Flask backend; main file <code>app.py</code>, deps in <code>requirements.txt</code>.</li>
+          <li><code>nc-frontend/</code> — static frontend files: <code>d.html</code>, <code>d.css</code>, <code>d.js</code>.</li>
+          <li><code>docs/</code> — optional documentation (project-level).</li>
+        </ul>
+
+        <hr />
+
+        <h4>System Architecture (diagram)</h4>
+        <pre><code>Browser (nc-frontend/d.html/d.js)
+   ↓ (POST JSON)
+Backend (nc-backend/app.py) → Database (SQLite/MySQL)
+   ↑ (GET /api/candidates)
+Browser (renders charts & UI)</code></pre>
+
+        <hr />
+
+        <h4>Database Schema</h4>
+        <p><strong>Table: candidates</strong></p>
+        <ul>
+          <li><strong>id</strong> — integer primary key</li>
+          <li><strong>name</strong> — text</li>
+          <li><strong>gender</strong> — text</li>
+          <li><strong>qualification</strong> — text</li>
+          <li><strong>date_assessed</strong> — date (YYYY-MM-DD)</li>
+          <li><strong>assessment_center</strong> — text</li>
+          <li><strong>result</strong> — text</li>
+          <li><strong>nc_no</strong> — text</li>
+          <li><strong>school</strong> — text</li>
+          <li><strong>source_file</strong> — text (original filename)</li>
+        </ul>
+
+        <hr />
+
+        <h4>Data Dictionary (column definitions)</h4>
+        <ul>
+          <li><strong>Column name:</strong> data type — short description / purpose.</li>
+          <li>For example: <code>date_assessed</code>: <code>DATE</code> — stored as <code>YYYY-MM-DD</code> for consistent filtering.</li>
+        </ul>
+
+        <hr />
+
+        <h4>Dataset Structure &amp; Organization</h4>
+        <ul>
+          <li>Each uploaded file should have a single header row; empty rows are ignored or normalized.</li>
+          <li>Frontend mapping recognizes common header variants (name, gender, qualification, date assessed, center, result, nc number, school).</li>
+          <li>Files are kept client-side in <code>localStorage['dashboardFiles']</code> for preview and optional re-import.</li>
+        </ul>
+
+        <hr />
+
+        <h4>Screenshot Guide (what to capture)</h4>
+        <ul>
+          <li>Overview page with charts rendered.</li>
+          <li>Upload modal showing example file selected.</li>
+          <li>Successful import alert and backend console showing inserted response.</li>
+          <li>My Files modal listing saved files and delete action.</li>
+        </ul>
+
+        <hr />
+
+        <h4>Version Notes</h4>
+        <ul>
+          <li><strong>v1.0.0</strong> — initial prototype.</li>
+          <li><strong>v1.1.0</strong> — SQLite fallback, improved delete-by-source, permissive CORS for dev.</li>
+        </ul>
+
+        <hr />
+
+        <h4>Optional Improvements</h4>
+        <ul>
+          <li>Add authentication for admin actions.</li>
+          <li>Add preview-delete endpoint to show rows before deleting.</li>
+          <li>Create export (CSV/Excel) feature for backups.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY FILES MODAL -->
+  <div class="help-modal" id="myFilesModal">
+    <div class="help-modal-content">
+      <div class="help-modal-header">
+        <h2>My Files</h2>
+        <button class="help-modal-close" id="myFilesClose">&times;</button>
+      </div>
+      <div class="help-modal-body" id="myFilesBody" style="max-height:400px; overflow-y:auto;">
+        <p class="empty-note">No saved files yet.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
